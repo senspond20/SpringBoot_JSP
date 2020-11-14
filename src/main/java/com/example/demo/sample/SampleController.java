@@ -1,7 +1,9 @@
 package com.example.demo.sample;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import com.sun.el.parser.ParseException;
 
 // @RestController 
 // @RestController = @Controller + @ResponseBody 개념으로 
@@ -56,13 +60,36 @@ public class SampleController {
 	// /sample/count2/100
 	@GetMapping("/count2/{num}")
 	@ResponseBody
-	public String count2(@PathVariable("num") int num) {
+	public int count2(@PathVariable("num") int num) {
 		int sum = 0;
 		for(int i =0; i < num; i ++) {
 			sum += i;
 		}
-		return Integer.toString(sum);
+		return sum; //Integer.toString(sum);
 	}
+	
+	// /sample/count3/문자열 --> 숫자대신 문자열을 넣었을떄 응답메시지 Bad Request 400 예외처리
+	@GetMapping("/count3/{num}")
+	@ResponseBody
+	public ResponseEntity<Object> count3(@PathVariable("num") String num) {
+		int n = 0;
+		try {
+	     	n = Integer.parseInt(num);
+	    } catch(NumberFormatException e) {  //문자열이 나타내는 숫자와 일치하지 않는 타입의 숫자로 변환 시 발생
+	    	Map<String,String> map = new HashMap<String, String>();
+	    	map.put("error", "umberFormatException");
+	    	map.put("message", e.getMessage());
+	    	map.put("timestamp", new Date().toString());
+	    	return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+	    }
+		
+		int sum = 0;
+		for(int i =0; i < n; i ++) {
+			sum += i;
+		}
+		return new ResponseEntity<>(sum, HttpStatus.OK);
+	}
+	
 	
 	// ModelAndView
 	@GetMapping("/hello3") 
@@ -134,4 +161,6 @@ public class SampleController {
 		return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 	}
 	
+	
+
 }
