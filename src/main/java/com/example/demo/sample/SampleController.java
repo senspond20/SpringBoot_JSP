@@ -93,7 +93,7 @@ public class SampleController {
 	// WebConfig 주석처리.
 	
 	// ModelAndView
-	@RequestMapping(value = "/hello4", method = RequestMethod.GET)
+	@GetMapping("/hello4")
 	@ResponseBody
 	public ModelAndView hello4() {
 		ModelAndView mv = new ModelAndView();
@@ -106,8 +106,7 @@ public class SampleController {
 	// jackson data-bind 가 포함되어 있어서 자동으로 json으로 바인딩해주는 결과를 볼 수 있다.
 	// 또한 한글 utf-8 인코딩 설정을 하지 않아도 한글이 깨지지 않는것을 확인할 수 있다.
 	
-	//@GetMapping("/rest/test1")
-	@RequestMapping(value = "/test1", method = RequestMethod.GET)
+	@GetMapping("/test1")
 	@ResponseBody
 	public Map<String,Object> test1() {
 		
