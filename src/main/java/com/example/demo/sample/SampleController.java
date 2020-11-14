@@ -43,7 +43,7 @@ public class SampleController {
 	
 	// get은 GetMapping으로 간단하게 쓸 수 있다.
 	// 1부터 num까지 더하는 api 
-	// /home/count1?num=100
+	// /sample/count1?num=100
 	@GetMapping("/count1")
 	@ResponseBody
 	public String count1(@RequestParam("num") int num) {
@@ -53,7 +53,7 @@ public class SampleController {
 		}
 		return Integer.toString(sum);
 	}
-	// /home/count2/100
+	// /sample/count2/100
 	@GetMapping("/count2/{num}")
 	@ResponseBody
 	public String count2(@PathVariable("num") int num) {
