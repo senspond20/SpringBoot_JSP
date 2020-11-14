@@ -1,3 +1,74 @@
+# SpringBoot_JSP
+
++ Spring Boot 2.4.0
++ OpenJdk 11
++ maven 방식
+
+## INIT 
+
++ dependency
+    + spring-web
+    + spring-boot-devtools
+    + lombok
+    + jsp
+
+```xml
+
+<!-- jsp -->
+<dependency> 
+	<groupId>javax.servlet</groupId> 
+	<artifactId>jstl</artifactId> 
+</dependency> 
+
+<dependency> 
+	<groupId>org.apache.tomcat.embed</groupId> 
+	<artifactId>tomcat-embed-jasper</artifactId> 
+</dependency> 
+```
+
++ application.properties
+```
+spring.mvc.view.prefix=/WEB-INF/jsp/
+spring.mvc.view.suffix=.jsp
+```
+
++ kill 8080 .bat
+```
+
+@ECHO OFF
+ECHO ---------------------------------------------------------
+ECHO ------[ kill 8080 port !!! ]-------
+ECHO ---------------------------------------------------------
+SET killport=8080
+for /f "tokens=5" %%p in ('netstat -aon ^| find /i "listening" ^| find "%killport%"') do taskkill /F /PID %%p
+pause
+```
+
+## Sample 
+
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Spring Boot Application with JSP</title>
+</head>
+<body>
+	Hello, Spring Boot App 
+	
+	<c:if test="${not empty data}">
+		<div> data : <span>${data }</span></div>
+	</c:if>
+</body>
+</html>
+
+```
+
+```java
 package com.example.demo.sample;
 
 import java.util.HashMap;
@@ -134,5 +205,5 @@ public class SampleController {
 		
 		return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 	}
-	
 }
+```
