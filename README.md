@@ -176,25 +176,25 @@ public class CountController {
 	    // get은 GetMapping으로 간단하게 쓸 수 있다. 스프링프레임워크 낮은버전에는 없다.
 	
 		// /count/method1?num=100
-	    @GetMapping("/method1")
+	    @GetMapping("/sum1")
 //		@ResponseBody
 		public String method1(@RequestParam("num") int num) {
 			int sum = 0;
-			for(int i =0; i < num; i ++) {
+			for(int i = 1; i <= num; i ++) {
 				sum += i;
 			}
 			return Integer.toString(sum);
 		}
 		
-		// 외부에 공개되는 api는 url패턴을 보고 어떤 Http 메소드인지 노출시키는 api는 설계하지 않는것이 좋다.
+		// 외부에 공개되는 api는 url패턴을 보고 어떤 Http 메소드인지 노출시키는 api는 설계하지 않는것이 좋을 수도 있다.
 		// get방식일 경우 ?num=100 과 같은 쿼리스트링을 보고 get방식인것을 유추할 수 있기때문이다.
 		
 		// /count/method2/100
-		@GetMapping("/method2/{num}")
+		@GetMapping("/sum2/{num}")
 //		@ResponseBody
 		public int method2(@PathVariable("num") int num) {
 			int sum = 0;
-			for(int i =0; i < num; i ++) {
+			for(int i = 1; i <= num; i ++) {
 				sum += i;
 			}
 			return sum; //Integer.toString(sum);
@@ -206,27 +206,91 @@ public class CountController {
 		// https://api.twitter.com/1.1/followers/ids.json?cursor=-1&screen_name=username
 		// -> 트위터 : {"errors":[{"code":215,"message":"Bad Authentication data."}]}
 		// 
-		@GetMapping("/method3/{num}")
+		@GetMapping("/sum3/{num}")
 //		@ResponseBody
 		public ResponseEntity<Object> method3(@PathVariable("num") String num) {
 			int n = 0;
+			
 			try {
 		     	n = Integer.parseInt(num);
 		    } catch(NumberFormatException e) {  //문자열이 나타내는 숫자와 일치하지 않는 타입의 숫자로 변환 시 발생
-		    	Map<String,String> map = new HashMap<String, String>();
-		    	map.put("error", "umberFormatException");
+		    	Map<String,Object> map = new HashMap<String, Object>();
+		    	map.put("code", HttpStatus.BAD_REQUEST.value());
 		    	map.put("message", e.getMessage());
 		    	map.put("timestamp", new Date().toString());
-		    	// {"error":"umberFormatException","message":"For input string: \"gdg\"","timestamp":"Sat Nov 14 21:11:40 KST 2020"}
+		    //	{"code":400,"message":"For input string: \"100df\"","timestamp":"Sat Nov 14 22:20:00 KST 2020"}
 		    	return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
 		    }
-			
 			int sum = 0;
-			for(int i =0; i < n; i ++) {
+			for(int i = 1; i <= n; i ++) {
 				sum += i;
 			}
 			return new ResponseEntity<>(sum, HttpStatus.OK);
 		}
+		
+//		num 이 null인 경우를 받을 수 있게 하고 처리
+		
+		@GetMapping({"/sum4/{num}","/sum4"})
+//		@ResponseBody
+		public ResponseEntity<Object> method4(@Nullable @PathVariable("num") String num) {
+			int n = 0;
+			Map<String,Object> map = new HashMap<String, Object>();
+			if(num == null) {
+				map.put("code", HttpStatus.BAD_REQUEST.value());
+		    	map.put("message", "입력하라고!");
+		    	map.put("timestamp", new Date().toString());
+		    	return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+			}
+
+			try {
+		     	n = Integer.parseInt(num);
+		    } catch(NumberFormatException e) {  //문자열이 나타내는 숫자와 일치하지 않는 타입의 숫자로 변환 시 발생
+		    	map.put("code", HttpStatus.BAD_REQUEST.value());
+		    	map.put("message", e.getMessage());
+		    	map.put("timestamp", new Date().toString());
+		    	// {"error":"umberFormatException","message":"For input string: \"gdg\"","timestamp":"Sat Nov 14 21:11:40 KST 2020"}
+		    	return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+		    } 
+		
+			int sum = 0;
+			for(int i = 1; i <= n; i ++) {
+				sum += i;
+			}
+			
+			map.put("code", HttpStatus.OK.value());
+	    	map.put("message", "success");
+	    	map.put("timestamp", new Date().toString());
+	    	map.put("data", sum);
+	    	return new ResponseEntity<>(map, HttpStatus.OK);
+	    	
+		}
+		
+		// 모든 API 마다 일일히 이러한 예외처리를 하는것은 많은 노가다를 유발시키는데
+		// 이부분을 공통코드로는 어떻게 ?
+		// => 스프링프레임워크 5버전 이상이나, 스프링부트에서는 @ControllerAdvice 어노테이션으로 쉽게 구현이 가능
+		// 낮은 버전의 스프링프레임워크에서는 어떻게 해야하나?
+		
+		// 일단 응답메시지 클래스를 만들어보자.
+		@GetMapping("/sumtest")
+//		@ResponseBody
+		public ResponseEntity<ResponseMessageVO> method5() {
+			int n = 100;
+			
+			ResponseMessageVO message = new ResponseMessageVO();
+			int sum = 0;
+			for(int i = 1; i <= n; i ++) {
+				sum += i;
+			}
+			HttpStatus status = HttpStatus.NOT_ACCEPTABLE;
+			
+			message.setHttpStatus(status);
+			message.add("desc", "1부터" + n +"까지의 합");
+			message.add("data", sum);
+//			return b;
+	    	return new ResponseEntity<>(message, status);
+	    	
+		}
+		
 		
 		// 모든 API 마다 일일히 이러한 예외처리를 하는것은 많은 노가다를 유발시키는데
 		// 이부분을 공통코드로는 어떻게 ?

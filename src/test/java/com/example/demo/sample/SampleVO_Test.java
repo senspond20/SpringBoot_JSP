@@ -3,6 +3,8 @@ package com.example.demo.sample;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.example.demo.sample.model.SampleVO;
+
 import lombok.extern.slf4j.Slf4j;
 
 // lombok Test With Junit4
