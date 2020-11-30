@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.rest.domain.ResponseMessage;
 import com.example.demo.sample.model.BasicResponseVO;
 import com.example.demo.sample.model.ResponseMessageVO;
 
